@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block bodyContent %}
+<div class="flex items-center h-full justify-center">
+    <div class="w-1/3 relative bg-secondaryBlack border border-slate-600 drop-shadow-card p-20 rounded-2xl">
+        <div class="absolute z-10 top-3 right-3">
+            <a href="{% url 'core:update_todo' todo.id %}" class="mr-2">
+                <span class="material-symbols-rounded cursor-pointer hover:text-slate-500 color-transition">
+                    edit
+                </span>
+            </a>
+            <span class="material-symbols-rounded cursor-pointer hover:text-slate-500 color-transition"
+                onclick="showDeleteModal()">
+                delete
+            </span>
+        </div>
+        <h1 class="text-3xl font-bold pb-1">{{todo}}</h1>
+        <hr>
+        <div class=" grid pt-1 grid-cols-2 row-auto">
+            <div class="text-xs text-slate-400">Created at
+                <span class="text-slate-300">{{todo.date_created|date:"d F Y"}}</span>
+                on <a href="{% url 'core:collection' todo.collection.id %}"
+                    class="hover:text-slate-300 color-transition">{{todo.collection}}</a>
+            </div>{% if todo.deadline is not None %}
+            <div class="text-right text-sm">Deadline: {{todo.deadline|date:"d M Y"}}
+                {% if todo.status == "PENDING" %}
+                <br>
+                <span class="text-xs text-slate-400">({{todo.deadLine}})</span>
+                {% endif %}
+                {% endif %}
+            </div>
+            <div class="text-center capitalize col-span-2  text-{{todo.status.lower}}">{{todo.status.lower}}
+                <!-- invisible span to load status colors -->
+                <span class="text-pending text-completed"></span>
+            </div>
+            {% if todo.description is not None %}
+            <div class="min-h-30 pt-5 col-span-2 place-self-center max-h-fit row-span-3 text-lg">{{todo.description}}
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<template id="my-template">
+    <swal-title>
+        Are you sure you want to delete this todo?
+    </swal-title>
+    <swal-icon type="warning" color="red"></swal-icon>
+    <swal-button type="confirm">
+        Yes
+    </swal-button>
+    <swal-button type="cancel">
+        Cancel
+    </swal-button>
+    <swal-param name="allowEscapeKey" value="false" />
+    <swal-param name="customClass" value='{ "popup": "my-popup" }' />
+    <swal-function-param name="didOpen" value="popup => console.log(popup)" />
+</template>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    function showDeleteModal() {
+        setTimeout(() => {
+            document.querySelectorAll(".swal2-height-auto").forEach((element) => {
+                element.classList.remove('swal2-height-auto');
+            })
+        }, 0)
+        Swal.fire({
+            template: '#my-template',
+            showCloseButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.replace("{% url 'core:delete_todo' todo.id %}")
+            }
+        })
+    }
+
+</script>
+{% endblock %}

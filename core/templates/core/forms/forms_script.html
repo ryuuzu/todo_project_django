@@ -1,0 +1,12 @@
+<script>
+    const inputTags = document.querySelectorAll("form > input");
+    inputTags.forEach((inputTag) => {
+        if (inputTag.getAttribute('type') !== "hidden" && inputTag.getAttribute('type') !== "submit") {
+            inputTag.classList.add("todo-input")
+        }
+    })
+    const selectTags = document.querySelectorAll("form > select");
+    selectTags.forEach((selectTag) => {
+        selectTag.classList.add("todo-select")
+    }) 
+</script>

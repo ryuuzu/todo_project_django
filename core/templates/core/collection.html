@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block bodyContent %}
+<div class="container todo-grid font-sans mt-1 w-full max-w-full text-white h-full">
+    <div class="bg-secondaryBlack relative pt-4">
+        <div class="text-3xl px-4 pb-5 font-titleDisplay text-slate-200 font-bold">
+            Collections
+        </div>
+
+        <div class="collections-list">
+            {% for collection in collections %}
+            <a href="{% url 'core:collection' collection.pk %}"
+                class="my-1 py-4 text-xl block px-4 hover:bg-slate-600 cursor-pointer color-transition font-medium">
+                {{collection.name}}
+            </a>
+            {% endfor %}
+            <form action="{% url 'core:add_collection' %}" method="post">
+                {% csrf_token %}
+                <input
+                    class="bg-secondaryBlack rounded-md w-full focus:ring-0 border-none my-1 py-4 text-lg px-4 font-medium"
+                    placeholder="New Collection" name="collection_name" type="text">
+            </form>
+        </div>
+
+        <canvas class="absolute bottom-0" id="myChart" width="400" height="400"></canvas>
+    </div>
+    <div class="mx-auto py-20 min-w-1/2 max-w-60">
+        <div class="top-bar flex items-center justify-between">
+            <div class="collection-title text-2xl font-bold">
+                {{active_collection.name}}
+            </div>
+            <span class="material-symbols-rounded cursor-pointer hover:text-slate-500 color-transition"
+                onclick="showDeleteModal()">
+                delete
+            </span>
+        </div>
+
+        <form action="{% url 'core:add_to_collection' active_collection.pk %}" method="post"
+            class="add-todo my-3 flex gap-4 items-center">
+            {% csrf_token %}
+            <input class="bg-secondaryBlack rounded-md w-full border-none my-3" placeholder="I need to..."
+                name="todo_text" type="text">
+            <button type="submit"
+                class="flex p-4 rounded-xl items-center bg-emerald-600 hover:bg-emerald-400 color-transition h-fit"><span
+                    class="material-symbols-rounded">
+                    add
+                </span></button>
+        </form>
+
+        <div class="incomplete-todos-list mt-4">
+            <span class="text-sm text-slate-400">Tasks - {{active_total_incomplete}}</span>
+            {% for todo in active_incomplete_todos %}
+            <div class="bg-secondaryBlack rounded-md flex items-center justify-between px-4 py-5 mb-4">
+                <a href="{% url 'core:todo' todo.pk %}">{{todo.title}}</a>
+                <div>
+                    <span class="text-slate-400 text-sm mr-2">{{todo.deadLine}}</span>
+                    <a href="{% url 'core:mark_complete' todo.pk %}"
+                        class="p-2 rounded-md text-sm bg-emerald-600 hover:bg-emerald-400 color-transition">Mark
+                        Completed</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <hr>
+        <div class="incomplete-todos-list mt-4">
+            <a href="" class="text-sm text-slate-400">Completed - {{active_total_complete}}</a>
+            {% for todo in active_complete_todos %}
+            <div class="bg-secondaryBlack  rounded-md flex items-center justify-between px-4 py-5 mb-4">
+                <a href="{% url 'core:todo' todo.pk %}" class="line-through">{{todo.title}}</a> <a
+                    href="{% url 'core:mark_pending' todo.pk %}"
+                    class="p-2 rounded-md text-sm bg-emerald-600 hover:bg-emerald-400 color-transition">Mark
+                    Incomplete</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<template id="my-template">
+    <swal-title>
+        Are you sure you want to delete {{active_collection.name}}?
+    </swal-title>
+    <swal-icon type="warning" color="red"></swal-icon>
+    <swal-button type="confirm">
+        <a href="#" class="h-full w-full">Yes</a>
+    </swal-button>
+    <swal-button type="cancel">
+        Cancel
+    </swal-button>
+    <swal-param name="allowEscapeKey" value="false" />
+    <swal-param name="customClass" value='{ "popup": "my-popup" }' />
+    <swal-function-param name="didOpen" value="popup => console.log(popup)" />
+</template>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    const data = {
+        labels: [
+            'Pending',
+            'Completed',
+        ],
+        datasets: [{
+            label: 'Todo Tasks',
+            data: [{{ total_incomplete }}, {{ total_complete }}],
+        backgroundColor: [
+            'red',
+            'green',
+        ],
+        borderColor: "#21212b",
+        hoverOffset: 4
+            }]
+        };
+    const config = {
+        type: 'doughnut',
+        data: data,
+    };
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const myChart = new Chart(ctx, config);
+
+    function showDeleteModal() {
+        setTimeout(() => {
+            document.querySelectorAll(".swal2-height-auto").forEach((element) => {
+                element.classList.remove('swal2-height-auto');
+            })
+        }, 0)
+        Swal.fire({
+            template: '#my-template',
+            showCloseButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.replace("{% url 'core:delete_collection' active_collection.id %}")
+            }
+        })
+    }
+
+</script>
+{% endblock %}

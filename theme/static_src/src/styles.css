@@ -1,0 +1,34 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter&family=Satisfy&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	height: 92vh;
+}
+
+.todo-grid {
+	@apply grid;
+	grid-template-columns: 1fr 4fr;
+}
+
+.collections-list {
+	@apply overflow-y-auto my-1;
+	height: calc(100% - 500px);
+}
+.collections-list::-webkit-scrollbar {
+	@apply w-1;
+}
+
+.collections-list::-webkit-scrollbar-thumb {
+	@apply bg-slate-400 rounded-lg;
+}
+
+.color-transition {
+	@apply transition-colors duration-200  ease-in-out;
+}
+
+.todo-input,
+.todo-select {
+	@apply bg-secondaryBlack rounded-md border-none focus:ring-0 shadow-epic;
+}

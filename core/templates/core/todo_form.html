@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block bodyContent %}
+<div class="flex justify-center items-center h-full">
+    <form action="" class="flex flex-col items-start" method="post">
+
+        {% csrf_token %}
+
+        {% for field in form %}
+        <label for="id_{{field.name}}">{{field.name|title}}:</label>
+        {{field}}
+        <br>
+        {% endfor %}
+
+
+        <input type="submit" name="Submit" class="bg-slate-500 px-7 py-3 rounded-lg hover:bg-opacity-50 color-transition cursor-pointer" />
+    </form>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+{% include 'core/forms/forms_script.html' %}
+{% endblock %}
