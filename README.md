@@ -1,1 +1,2 @@
-# todo_project_django
+# Todo Project Django
+ Todo Project made in Django
