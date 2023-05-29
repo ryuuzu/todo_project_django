@@ -5,8 +5,6 @@ app_name = 'core'
 urlpatterns = [
     path('', home, name="home"),
 
-    path('register/', register, name="register"),
-
     path('collection/<int:pk>/', collection, name="collection"),
     path('collection/add_collection', add_collection, name="add_collection"),
     path('collection/<int:pk>/add_todo',
